@@ -79,7 +79,7 @@ int main(void) {
         printRoomScenario(&currentRoom, &playerInventory);
 
         char input;
-        printf("Enter direction (w/a/s/d) to move, i to view inventory, u to use an item, m to check map, q to quit, or g to go to a specific location: ");
+        printf("Enter direction (w/a/s/d) to move, i to view inventory, u to use an item, m to check map, q to quit: ");
         scanf(" %c", &input);
 
         // Store previous location
@@ -105,44 +105,44 @@ int main(void) {
                 useItem();
                 break;
             case 'm': // Check map
-                printf("You check your map. Current location: (%d, %d)\n", currentRoom.x, currentRoom.y);
-                char map[30][51] = {
-                    "......................",
-                    "..................................................",
-                    "..................................................",
-                    "......................--..........................",
-                    "......................||..........................",
-                    "......................--..........................",
-                    "......................**..........................",
-                    "......................--..........................",
-                    "......................||..........................",
-                    "..........--..........--..........................",
-                    "..........||....--....**..........................",
-                    "..........--....||....--..........................",
-                    "..........**..........||..........................",
-                    "....--*--*--*--*--*--*--*--*--*--*--*--*--*.......",
-                    "....||*||*||*||*||*||*||*||*||*||*||*||*||*.......",
-                    "....--*--*--*--*--*--*--*--*--*--*--*--*--*.......",
-                    "...................**.||.**.......................",
-                    "...................**.--.**.......................",
-                    "....................**..**........................",
-                    ".....................****.........................",
-                    "......................--..........................",
-                    "......................||..........................",
-                    "......................--..........................",
-                    "......................**..........................",
-                    "......................--..........................",
-                    "......................||..........................",
-                    "......................--..........................",
-                    ".................................................."
-                };
+    printf("You check your map. Current location: (%d, %d)\n", currentRoom.x, currentRoom.y);
+    char map[30][51] = {
+        "                ",
+        "                                                  ",
+        "                                                  ",
+        "                                                  ",
+        "                      ||                          ",
+        "                      --                          ",
+        "                      ##                          ",
+        "                      --                          ",
+        "                      ||                          ",
+        "          --          --                          ",
+        "          ||    --    ##                          ",
+        "          --    ||    --                          ",
+        "          ##          ||                          ",
+        "    --*--*--*--*--*--*--*--*--*--*--*--*--*       ",
+        "    ||#||#||#||#||#||#||#||#||#||#||#||#||#       ",
+        "    --*--*--*--*--*--*--*--*--*--*--*--*--*       ",
+        "                   ## || ##                       ",
+        "                   ## -- ##                       ",
+        "                    ##  ##                        ",
+        "                     ####                         ",
+        "                      --                          ",
+        "                      ||                          ",
+        "                      --                          ",
+        "                      ##                          ",
+        "                      --                          ",
+        "                      ||                          ",
+        "                      --                          ",
+        "                                                  "
+    };
 
-                updateMap(map, currentRoom.x, currentRoom.y);
+    updateMap(map, currentRoom.x, currentRoom.y);
 
-                for (int i = 0; i < 30; i++) {
-                    printf("%s\n", map[i]);
-                }
-                break;
+    for (int i = 0; i < 30; i++) {
+        printf("%s\n", map[i]);
+    }
+    break;
             case 'q': // Quit
                 return 0;
             case 'g': // Debug mode: go to specific location
@@ -159,12 +159,12 @@ int main(void) {
 }
 void printRoomScenario(Room *room, Inventory *inventory) {
     if (room->x == 0 && room->y == 0) {
-        printf("You are at the entrance of the great tree. The towering size gives a presence of grandeur and ominousness.\n");
+        printf("You are at the entrance of the great tree. The towering size gives a presence of grandeur and omininimity.\n");
     } else if (room->x == 0 && room->y == 1) { // room that begins journey
         printf("You are at the foot of the tree. It feels as if the way has shut out behind you.\n");
         if (!room->greeted[0]) {
             printf("You see something shining with light moving toward you...\n");
-            printf("Greetings adventurer, you must be . I am a guiding spirit, here to help guide heroes to save Yggdrasil: the mainspring of the universe.\n");
+            printf("Greetings adventurer, I was expecting you. I am a guiding spirit, here to help guide heroes to save Yggdrasil: the mainspring of the universe.\n");
             printf("The great tree is dying due to unknown causes. That is what awakened me, and I have sensed evil and rot in the nearby worlds.\n");
             printf("In order to save Yggdrasil, you must seek out the world essence of the corrupted lands and bring them to the heart of the tree.\n");
             room->greeted[0] = true; // Set greeted to true to avoid repeated greetings
@@ -185,8 +185,60 @@ void printRoomScenario(Room *room, Inventory *inventory) {
             }
         }
     } else if (room->x == 0 && room->y == 2) {
-        printf("You are further up the tree. The branches seem to be closing in in the distance.\n");
-    } else if (room->x == 1 && room->y == 1) { // right side
+        printf("You are further up the tree. The branches seem to be closing in the distance.\n");
+    } else if (room->x == 0 && room->y == 3) {
+    printf("You move even further, revealing a complex pattern of thorns on the wall blocking your way.\n");
+    if (worldEssences == 3) {
+        printf("The walls seem to start glowing from your presence. Would you like to reveal the World Essences?\n");
+        printf("[Y]/[N]\n");
+        char choice;
+        scanf(" %c", &choice); // Reading the player's choice
+
+        if (choice == 'Y' || choice == 'y') {
+            printf("The region around you starts to warp and vibrate...\n");
+            printf("The guiding spirit appears before you, radiating with light.\n");
+            printf("[Guiding Spirit]: You have done it, brave adventurer! The World Essences are reunited.\n");
+            printf("[Guiding Spirit]: Yggdrasil will now start to heal, and with it, the universe will begin to restore its balance.\n");
+            printf("[Guiding Spirit]: Your journey has saved countless lives and worlds. Thank you.\n");
+
+            // Display a winning message
+            const char *youWonArt[] = {
+                "*************************************************",
+                "*                                               *",
+                "*                   YOU WON                     *",
+                "*                                               *",
+                "*       Yggdrasil will start to heal now.       *",
+                "*                                               *",
+                "*         The universe will restore balance.    *",
+                "*                                               *",
+                "*        Your journey has saved countless       *",
+                "*           lives and worlds. Thank you.        *",
+                "*                                               *",
+                "*            _______                            *",
+                "*           /       \\                           *",
+                "*          /  You    \\                          *",
+                "*         /   Won!    \\                         *",
+                "*        /_____________\\                        *",
+                "*       |               |                       *",
+                "*       |               |                       *",
+                "*       |_              *",
+                "*                                               *",
+                "*************************************************"
+            };
+
+            const int artSize = sizeof(youWonArt) / sizeof(youWonArt[0]);
+
+            for (int i = 0; i < artSize; i++) {
+                printf("%s\n", youWonArt[i]);
+            }
+
+            // End the game
+            exit(0);
+        } else {
+            printf("You decide to hold on to the World Essences for now.\n");
+        }
+    }
+} else if (room->x == 1 && room->y == 1) { // right side
         printf("You travelled to the right; you sense the movement of quiet, yet whimsical water.\n");
     } else if (room->x == -1 && room->y == 1) { // left side
         printf("You travelled to the left; you sense the ruffling of trees far from you.\n");
@@ -331,9 +383,9 @@ void printRoomScenario(Room *room, Inventory *inventory) {
     } else if (room->x == 4 && room->y == 1) {
         if (!room->greeted[1]) {
             printf("You see slithering across the calming raging waters.\n");
-            printf("[Wandering Mermaid] Hello traveller, I can sense that you are here for a reason?\n");
-            printf("The seas have gone rampant; a land creature has no business being here.\n");
-            printf("Ahead are whirlpools which will force you change your path.\n");
+            printf("[Wandering Mermaid]: Hello traveller, I can sense that you are here for a reason?\n");
+            printf("[Wandering Mermaid]: The seas have gone rampant; a land creature has no business being here.\n");
+            printf("[Wandering Mermaid]: Ahead are whirlpools which will force you change your path.\n");
             room->greeted[1] = true; // Mark as greeted
         } else {
             printf("What would you like to do?\n");
@@ -352,8 +404,8 @@ void printRoomScenario(Room *room, Inventory *inventory) {
     } else if (room->x == -1 && room->y == 0) { // south
             printf("You travel south sensing a cold presence.\n");
     } else if ((room->x == 1 && room->y == -1) || (room->x == -1 && room->y == -1)) {
-            printf("You have entered the Underworld. It's cold and a fog swallows all you can see. You sense a calm stream afar\n");
-            printf("You don't sense any message from the guiding spirit.../n");
+            printf("You have entered the Underworld. It's cold and a fog swallows all you can see. You sense a calm stream afar. \n");
+            printf("You don't sense any message from the guiding spirit... \n");
     } else if ((room->x == 1 && room->y == -2) || (room->x == -1 && room->y == -2)) {
             printf("You approach the calm stream and see a shadowy figure standing by a boat.\n");
             if (!room->greeted[2]) {
@@ -365,10 +417,10 @@ void printRoomScenario(Room *room, Inventory *inventory) {
                 room->greeted[2] = true; // Mark as greeted
             }
                 printf("The Ferryman of the Dead waits silently by his boat.\n");
-                printf("[Ferryman of the Dead]: Are you ready to navigate the maze of the Underworld? [y/n]\n");
+                printf("[Ferryman of the Dead]: Are you ready to navigate the maze of the Underworld? [y/n]. \n");
                 char choice;
                 scanf(" %c", &choice);
-                if (choice == 'y') {
+                if (choice == 'y' || 'Y') {
                     // Engage the maze puzzle
                     if (!room->puzzles[3]) {
                         printf("You step onto the ferry and begin to navigate the maze of the Underworld.\n");
@@ -493,6 +545,28 @@ bool navigateMaze() {
     int x = 1, y = 1; // Starting position in the maze
     int endX = 3, endY = 3; // Ending position in the maze
 
+    char viewMapChoice;
+    printf("[Ferryman of the dead]: Would you like to see my estimation of the river path before starting? \n"); // There is no hard verison, since I think the maze would be too hard
+    printf("[Y/N] \n");
+    scanf(" %c", &viewMapChoice);
+
+    if (viewMapChoice == 'Y' || viewMapChoice == 'y') {
+        printf("Maze Map:\n");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (i == y && j == x) {
+                    printf("S "); // Starting position
+                } else if (i == endY && j == endX) {
+                    printf("E "); // Ending position
+                } else {
+                    printf("%d ", maze[i][j]);
+                }
+            }
+            printf("\n");
+        }
+        printf("[Ferryman of the dead]: According to my vision, the different numbers represent either a path or wall. \n");
+    }
+
     while (x != endX || y != endY) {
         printf("You are in the maze. Choose a direction to move (w/a/s/d): ");
         char move;
@@ -523,6 +597,7 @@ bool navigateMaze() {
         printf("Current position: (%d, %d)\n", x, y);
     }
 
+    printf("Congratulations! You have navigated the maze successfully.\n");
     return true;
 }
 void bossFight(const char *bossName) {
@@ -665,8 +740,8 @@ void bossFight(const char *bossName) {
         }
 
         // Check if the boss is defeated
-        if ((firestormCount >= requiredFirestorm && thunderboltCount >= requiredThunderbolt) ||
-            (slashCount >= requiredSlash && pierceCount >= requiredPierce)) {
+        if ((firestormCount >= requiredFirestorm || thunderboltCount >= requiredThunderbolt) ||
+            (slashCount >= requiredSlash || pierceCount >= requiredPierce)) {
             bossDefeated = true;
         }
     }
@@ -681,13 +756,12 @@ void bossFight(const char *bossName) {
 void updateMap(char map[30][51], int x, int y) {
     // Convert x, y coordinates to map index and place 'X' in the map
     // Adjust according to your game's coordinate system and map layout
-    int mapX = x + 15; // Example conversion, adjust as needed
+    int mapX = x + 25; // Example conversion, adjust as needed
     int mapY = 15 - y; // Example conversion, adjust as needed
 
     if (mapY >= 0 && mapY < 30 && mapX >= 0 && mapX < 50) {
-        if (map[mapY][mapX] == '|') {
+        if (map[mapY][mapX] == '|' && map[mapY][mapX + 2] == '|') {
             map[mapY][mapX + 1] = 'X';
-            map[mapY][mapX + 2] = '|';
         }
     }
 }
@@ -702,7 +776,7 @@ void useItem() {
             hp += 20; // Example healing amount
             printf("You restored 20 HP. Current HP: %d\n", hp);
         } else if (strcmp(playerInventory.items[itemIndex - 1], "Elixir") == 0) {
-            hp += 50; // Example healing amount
+            hp += 40; // Example healing amount
             printf("You restored 50 HP. Current HP: %d\n", hp);
         }
 
@@ -717,72 +791,84 @@ void useItem() {
 }
 
 void displayMenu(){
-           const char *art[] = {
-               "*************************************************",
-               "*                                               *",
-               "*          Remnants of Yggdrasil                *",
-               "*                                               *",
-               "*     ██▀███  ▓█████ ███▄ ▄███▓ ███▄    █  ▄▄▄      ███▄    █ ▄▄▄█████▓ ██████     ▒█████    █████▒   ▓██   ██▓  ▄████   ▄████ ▓█████▄  ██▀███  ▄▄▄        ██████  ██▓ ██▓       *",
-               "*    ▓██ ▒ ██▒▓█   ▀▓██▒▀█▀ ██▒ ██ ▀█   █ ▒████▄    ██ ▀█   █ ▓  ██▒ ▓▒██    ▒    ▒██▒  ██▒▓██   ▒     ▒██  ██▒ ██▒ ▀█▒ ██▒ ▀█▒▒██▀ ██▌▓██ ▒ ██▒████▄    ▒██    ▒ ▓██▒▓██▒       *",
-               "*    ▓██ ░▄█ ▒▒███  ▓██    ▓██░▓██  ▀█ ██▒▒██  ▀█▄ ▓██  ▀█ ██▒▒ ▓██░ ▒░ ▓██▄      ▒██░  ██▒▒████ ░      ▒██ ██░▒██░▄▄▄░▒██░▄▄▄░░██   █▌▓██ ░▄█ ▒██  ▀█▄  ░ ▓██▄   ▒██▒▒██░       *",
-               "*    ▒██▀▀█▄  ▒▓█  ▄▒██    ▒██ ▓██▒  ▐▌██▒░██▄▄▄▄██▓██▒  ▐▌██▒░ ▓██▓ ░  ▒   ██▒   ▒██   ██░░▓█▒  ░      ░ ▐██▓░░▓█  ██▓░▓█  ██▓░▓█▄   ▌▒██▀▀█▄ ░██▄▄▄▄██   ▒   ██▒░██░▒██░       *",
-               "*    ░██▓ ▒██▒░▒████▒██▒   ░██▒▒██░   ▓██░ ▓█   ▓██▒██░   ▓██░  ▒██▒ ░▒██████▒▒   ░ ████▓▒░░▒█░         ░ ██▒▓░░▒▓███▀▒░▒▓███▀▒░▒████▓ ░██▓ ▒██▒▓█   ▓██▒▒██████▒▒░██░░██████▒   *",
-               "*    ░ ▒▓ ░▒▓░░░ ▒░ ░ ▒░   ░  ░░ ▒░   ▒ ▒  ▒▒   ▓▒█░ ▒░   ▒ ▒   ▒ ░░  ▒ ▒▓▒ ▒ ░   ░ ▒░▒░▒░  ▒ ░          ██▒▒▒  ░▒   ▒  ░▒   ▒  ▒▒▓  ▒ ░ ▒▓ ░▒▓░▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░▓  ░ ▒░▓  ░   *",
-               "*      ░▒ ░ ▒░ ░ ░  ░  ░      ░░ ░░   ░ ▒░  ▒   ▒▒ ░ ░░   ░ ▒░    ░   ░ ░▒  ░ ░     ░ ▒ ▒░  ░          ▓██ ░▒░   ░   ░   ░   ░  ░ ▒  ▒   ░▒ ░ ▒░ ▒   ▒▒ ░░ ░▒  ░ ░ ▒ ░░ ░ ▒  ░   *",
-               "*      ░░   ░    ░  ░      ░      ░   ░ ░   ░   ▒     ░   ░ ░   ░     ░  ░  ░     ░ ░ ░ ▒   ░ ░        ▒ ▒ ░░  ░ ░   ░ ░ ░   ░  ░ ░  ░   ░░   ░  ░   ▒   ░  ░  ░   ▒ ░  ░ ░      *",
-               "*       ░        ░  ░      ░            ░       ░  ░        ░               ░         ░ ░              ░ ░           ░       ░    ░       ░          ░  ░      ░   ░      ░  ░   *",
-               "*                                                                                                      ░ ░                      ░                                                *",
-               "*                                                                                                                       *",
-               "*                                                                                       [1] Start Game                  *",
-               "*                                                                                          [2] Quit                        *",
-               "*                                                                                                                        *",
-               "*                                                                                         ,@@@@/                 *",
-               "*                                                                                     ,@@@@@/@@,                  *",
-               "*                                                          \\   \\       ,,,.   ,@@@@@@/@@/  .oo8888o.          *",
-               "*                                                            \\   \\  \\  ,&%%&%&&%,@@@@@/@@,/888\\\\88/8o        *",
-               "*                                                              \\,%&\\\\%&&%&&%,@@@\\\\@@@/@@/@88\\\\88888/88'      *",
-               "*                                                              %\\&&%&/%&&%@@\\\\@@/ /@/8888\\\\88888'      *",
-               "*                                                             %&&%/ %&%%&&@@\\\\ V /@@' `88\\\\8 `/88'       *",
-               "*                                                             `&%\\\\ ` /%&'    |.|        \\ '|8'         *",
-               "*                                                                  |o|        | |         | |            *",
-               "*                                                                  |.|        | |         | |            *",
-               "*                                                           \\/ ._\\\\//_/__/  ,\\\\_//__\\/.  \\\\_//__/ *"
-           };
+    const char *art[] = {
+        "*************************************************",
+        "*                 Remnant of Yggdrasil          *",
+        "*  _____                                       *",
+        "* |  __ \\                                                      *",
+        "* | |__) |  ___     |~~~~~~    _____ ____       __     _         |__  _ _|*",
+        "* |  _  /  / _ \\   |  || |   | / \\   | ||    / _ \\   || \\   __    |  | *",
+        "* | | \\ \\ |  __/  | |  | | | \\   / /  ||  /  | - || || | | ||    |  | *",
+        "* |_|  \\_\\|_____ | |   | | | /   \\/   |\\ / | / \\ |  ||  \\ |_|    |  | *",
+        "*                                                              *",
+        "*  ____       ______                                   *",
+        "* |  _ \\   |   ___\\                                   *",
+        "* | | | |   |  |__                                      *",
+        "* | | | |  | _____|                                       *",
+        "* | |_| || | |                                           *",
+        "* |_   _|  |_|                                                   *",
+        "*  -_ _-                                                       *",
+        "*  __     __                                                    *",
+        "*  \\ \\   / /                                                          *",
+        "*   \\ \\_/ /    ___     __ _    ___ __ _                 _____    ___      _   *",
+        "*    \\   /     / _` |  / _` |  | __| )  )     / _ \\    / ____|    \\__/    | |*",
+        "*     | |      / ( | |  /( | |  |   __  |     / /_\\ \\  | |____      _      | | *",
+        "*     |_|      \\__,   \\__, |  |  |  \\ \\    /   _   \\  \\____||    | |     | | *",
+        "*               __/ |   __/ |   | |   \\  \\  / _ /  \\_\\   ____/|   |   |    |  |__ *",
+        "*               |___/   |___/                           _____/   |_____|   |_____|     *",
+        "*                                                                                     *",
+        "*                                                                                                                       *",
+        "*                                                                                       [1] Start Game                  *",
+        "*                                                                                          [2] Quit                        *",
+        "*                                                                                                                        *",
+        "*                                                                                         ,@@@@/                 *",
+        "*                                                                                     ,@@@@@/@@,                  *",
+        "*                                                          \\   \\       ,,,.   ,@@@@@@/@@/  .oo8888o.          *",
+        "*                                                            \\   \\  \\  ,&%%&%&&%,@@@@@/@@,/888\\\\88/8o        *",
+        "*                                                              \\,%&\\\\%&&%&&%,@@@\\\\@@@/@@/@88\\\\88888/88'      *",
+        "*                                                              %\\&&%&/%&&%@@\\\\@@/ /@/8888\\\\88888'      *",
+        "*                                                             %&&%/ %&%%&&@@\\\\ V /@@' `88\\\\8 `/88'       *",
+        "*                                                             `&%\\\\ ` /%&'    |.|        \\ '|8'         *",
+        "*                                                                  |o|        | |         | |            *",
+        "*                                                                  |.|        | |         | |            *",
+        "*                                                           \\/ ._\\\\//_/__/  ,\\\\_//__\\/.  \\\\_//__/ *",
+        "*************************************************"
+    };
+    const int artSize = sizeof(art) / sizeof(art[0]);
 
-           const int artSize = sizeof(art) / sizeof(art[0]);
-
-           for (int i = 0; i < artSize; i++) {
-               printf("%s\n", art[i]);
-           }
-
-           int choice;
-           do {
-                   printf("Enter your choice: ");
-                   scanf("%d", &choice);
-
-                   if (choice == 2) {
-                       printf("Exiting game...\n");
-                       exit(0);
-                   } else if (choice != 1) {
-                       printf("Invalid choice! Please enter 1 or 2.\n");
-                   }
-           } while (choice != 1);
+    for (int i = 0; i < artSize; i++) {
+        printf("%s\n", art[i]);
     }
+
+    int choice;
+    do {
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 2) {
+            printf("Exiting game...\n");
+            exit(0);
+        } else if (choice != 1) {
+            printf("Invalid choice! Please enter 1 or 2.\n");
+        }
+    } while (choice != 1);
+}
+
 void gameOver() {
     const char *art[] = {
         "*************************************************",
         "*                                               *",
-        "*                 GAME OVER                       *",
+        "*                 GAME OVER                     *",
         "*                                               *",
         "*       Yggdrasil has succumbed to decay.       *",
         "*                                               *",
-        "*          -    --.                          *",
-        "*           \- - - ,---.'. .--.                     *",
-        "*            /  Y    Y    \\                   *",
-        "*            |  \--. |   |                   *",
-        "*             \\ '\   \\`    /        /            *",
-        "*              `-._ \ `--'           /            *",
-        "*                  `- Y.            /              *",
+        "*          -    --.                             *",
+        "*           \\- - - ,---.'. .--.                  *",
+        "*            /  Y    Y    \\                      *",
+        "*            |  \\--. |   |                       *",
+        "*             \\ '\\   \\`    /    /            *",
+        "*              `-._ \\ `--'           /           *",
+        "*                  `- Y.            /            *",
         "*                    `.           /-             *",
         "*                     \\   ,--,    -              *",
         "*                      \\_/   \\_ -               *",
@@ -816,11 +902,6 @@ void gameOver() {
     getchar();
     exit(0);
 }
-
-
-
-
-
 
 
 
