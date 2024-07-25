@@ -464,14 +464,30 @@ void printInventory(const Inventory *inventory) {
 }
 
 void solveWhirlpoolPuzzle(Room *room) {
-    // Define the ASCII map for the whirlpool puzzle
-    char map[MAP_SIZE][MAP_SIZE] = {
+    // Define the ASCII maps for the whirlpool puzzle
+    char easyMap[MAP_SIZE][MAP_SIZE] = {
         {'S', '.', '.', 'W', '.'},
         {'.', 'W', '.', 'W', '.'},
         {'W', '.', '.', '.', '.'},
         {'.', 'W', '.', 'W', '.'},
         {'.', '.', 'W', '.', 'E'}
     };
+
+    char hardMap[MAP_SIZE][MAP_SIZE] = {
+        {'S', 'W', '.', 'W', '.'},
+        {'.', 'W', '.', 'W', 'W'},
+        {'W', '.', 'W', '.', '.'},
+        {'.', 'W', '.', 'W', '.'},
+        {'W', '.', 'W', 'W', 'E'}
+    };
+
+    // Select the appropriate map based on difficulty mode
+    char (*map)[MAP_SIZE];
+    if (difficultyMode == 0) {
+        map = easyMap;
+    } else {
+        map = hardMap;
+    }
 
     // Player's initial position
     int playerX = 0;
@@ -497,25 +513,30 @@ void solveWhirlpoolPuzzle(Room *room) {
         scanf(" %c", &move);
 
         // Update player position based on input
-        if (move == 'w' && playerX > 0) playerX--;
-        if (move == 'a' && playerY > 0) playerY--;
-        if (move == 's' && playerX < MAP_SIZE - 1) playerX++;
-        if (move == 'd' && playerY < MAP_SIZE - 1) playerY++;
+        int newX = playerX;
+        int newY = playerY;
+        if (move == 'w' && newX > 0) newX--;
+        if (move == 'a' && newY > 0) newY--;
+        if (move == 's' && newX < MAP_SIZE - 1) newX++;
+        if (move == 'd' && newY < MAP_SIZE - 1) newY++;
 
         // Check for whirlpools
-        if (map[playerX][playerY] == 'W') {
+        if (map[newX][newY] == 'W') {
             printf("You are caught in a whirlpool!\n");
             // Move player based on whirlpool rules (example: move to a random location)
-            playerX = rand() % MAP_SIZE;
-            playerY = rand() % MAP_SIZE;
+            newX = rand() % MAP_SIZE;
+            newY = rand() % MAP_SIZE;
         }
+
+        playerX = newX;
+        playerY = newY;
 
         // Display the map
         printf("Whirlpool Puzzle:\n");
         for (int i = 0; i < MAP_SIZE; i++) {
             for (int j = 0; j < MAP_SIZE; j++) {
                 if (i == playerX && j == playerY) {
-                    printf("P"); // Player's position
+                    printf("P "); // Player's position
                 } else {
                     printf("%c ", map[i][j]);
                 }
