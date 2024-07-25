@@ -6,7 +6,7 @@
 // extern void initialise_monitor_handles(void);
 
 #define MAX_PUZZLES 4
-#define MAX_TREASURES 4
+#define MAX_TREASURES 2
 #define MAX_ITEMS 10
 #define ITEM_NAME_LENGTH 50
 #define GREET 4
@@ -44,13 +44,16 @@ void solveWhirlpoolPuzzle(Room *room);
 bool navigateMaze();
 void gameOver();
 void bossFight(const char *bossName);
+void updateMap(char map[30][51], int x, int y);
+void useItem();
 
 int main(void) {
     // initialise_monitor_handles();
     displayMenu();
 
     printf("Welcome to the Game:\n");
-     // Character selection
+
+    // Character selection
     int characterChoice;
     printf("Choose your character:\n");
     printf("[0] Warrior\n");
@@ -65,18 +68,22 @@ int main(void) {
     scanf("%d", &difficultyMode);
 
     while (1) {
-     // check hp for game over
-     if (hp <= 0) {
+        // Check if HP is zero
+        if (hp <= 0) {
             gameOver();
         }
+
         printf("Current HP: %d\n", hp); // Display current HP
         printf("Current Money: %d\n", money); // Display current money
-    	printf("Current Location: (%d, %d)\n", currentRoom.x, currentRoom.y);
+        printf("Current Location: (%d, %d)\n", currentRoom.x, currentRoom.y); // Debug print
         printRoomScenario(&currentRoom, &playerInventory);
 
         char input;
-        printf("Enter direction (w/a/s/d) to move, i to view inventory, u to use an item, m to check map, or q to quit: ");
+        printf("Enter direction (w/a/s/d) to move, i to view inventory, u to use an item, m to check map, q to quit, or g to go to a specific location: ");
         scanf(" %c", &input);
+
+        // Store previous location
+        previousRoom = currentRoom;
 
         switch (input) {
             case 'w': // Move up
@@ -95,40 +102,61 @@ int main(void) {
                 printInventory(&playerInventory);
                 break;
             case 'u': // Use item
-                printf("Select an item number to use: ");
-                int itemIndex;
-                scanf("%d", &itemIndex);
-                if (itemIndex > 0 && itemIndex <= playerInventory.itemCount) {
-                    printf("You used %s.\n", playerInventory.items[itemIndex - 1]);
-                    // Remove the item from the inventory
-                    for (int i = itemIndex - 1; i < playerInventory.itemCount - 1; i++) {
-                        strcpy(playerInventory.items[i], playerInventory.items[i + 1]);
-                    }
-                    playerInventory.itemCount--;
-                } else {
-                    printf("Invalid item number.\n");
-                }
+                useItem();
                 break;
             case 'm': // Check map
                 printf("You check your map. Current location: (%d, %d)\n", currentRoom.x, currentRoom.y);
+                char map[30][51] = {
+                    "......................",
+                    "..................................................",
+                    "..................................................",
+                    "......................--..........................",
+                    "......................||..........................",
+                    "......................--..........................",
+                    "......................**..........................",
+                    "......................--..........................",
+                    "......................||..........................",
+                    "..........--..........--..........................",
+                    "..........||....--....**..........................",
+                    "..........--....||....--..........................",
+                    "..........**..........||..........................",
+                    "....--*--*--*--*--*--*--*--*--*--*--*--*--*.......",
+                    "....||*||*||*||*||*||*||*||*||*||*||*||*||*.......",
+                    "....--*--*--*--*--*--*--*--*--*--*--*--*--*.......",
+                    "...................**.||.**.......................",
+                    "...................**.--.**.......................",
+                    "....................**..**........................",
+                    ".....................****.........................",
+                    "......................--..........................",
+                    "......................||..........................",
+                    "......................--..........................",
+                    "......................**..........................",
+                    "......................--..........................",
+                    "......................||..........................",
+                    "......................--..........................",
+                    ".................................................."
+                };
+
+                updateMap(map, currentRoom.x, currentRoom.y);
+
+                for (int i = 0; i < 30; i++) {
+                    printf("%s\n", map[i]);
+                }
                 break;
-            case 'q': // Quit;
-         //   case 'g': // Debug mode: go to specific location
-          //      printf("Enter x coordinate: ");
-           //     scanf("%d", &currentRoom.x);
-           //     printf("Enter y coordinate: ");
-           //     scanf("%d", &currentRoom.y);
-            //    break;
+            case 'q': // Quit
                 return 0;
+            case 'g': // Debug mode: go to specific location
+                printf("Enter x coordinate: ");
+                scanf("%d", &currentRoom.x);
+                printf("Enter y coordinate: ");
+                scanf("%d", &currentRoom.y);
+                break;
             default:
-                printf("Invalid input! Please enter w/a/s/d/i/u/m or q.\n");
+                printf("Invalid input! Please enter w/a/s/d/i/u/m/q or g.\n");
                 break;
         }
     }
-
-    return 0;
 }
-
 void printRoomScenario(Room *room, Inventory *inventory) {
     if (room->x == 0 && room->y == 0) {
         printf("You are at the entrance of the great tree. The towering size gives a presence of grandeur and ominousness.\n");
@@ -150,7 +178,7 @@ void printRoomScenario(Room *room, Inventory *inventory) {
                 if (worldEssences == 0) {
                     printf("[Guiding Spirit]: You have no world essences. You should explore to the east, west, or south.\n");
                  } else if (worldEssences == 3) {
-                    printf ("[Guiding Spirit]: You have collected 3 world essences! Now you just need to go north from here to restore Yggdrasil! /n")
+                    printf ("[Guiding Spirit]: You have collected 3 world essences! Now you just need to go north from here to restore Yggdrasil! /n");
                 } else {
                     printf("[Guiding Spirit]: You have %d world essences. Keep seeking more essences to save Yggdrasil.\n", worldEssences);
                 }
@@ -186,17 +214,18 @@ void printRoomScenario(Room *room, Inventory *inventory) {
         printf("[2] Elixir - 20 gold\n");
         printf("[3] Leave the shop\n");
 
-        const char *elfArt[] = {
-            "                  ,     ,",
-            "    ____     (\____/)",
-            "     --   |  (_o/o_) ",
-            "   _/--_\-|_   (~)",
-            "          |   __||__    \\)",
-            "          | []/______\\[] /",
-            "  --------|/ \\______/ \\/",
-            "   Shop    /    /__\\",
-            "         (\\   /____\\"
-        };
+     const char *elfArt[] = {
+    "                  ,     ,",
+    "    ____     (\\____/)",
+    "     --   |  (_o/o_) ",
+    "   _/--_\\-|_   (~)",
+    "          |   __||__    \\)",
+    "          | []/______\\[] /",
+    "  --------|/ \\______/ \\/",
+    "   Shop    /    /__\\",
+    "         (\\   /____\\"
+};
+
 
         const int elfArtSize = sizeof(elfArt) / sizeof(elfArt[0]);
 
@@ -334,7 +363,7 @@ void printRoomScenario(Room *room, Inventory *inventory) {
                 printf("[Ferryman of the Dead]: I presume that is you. The rivers of the dead is very hostile at this moment, due to the decay. Not an easy task to navigate for a mortal.\n");
                 printf("[Ferryman of the Dead]: I can help you find the world essence of the Underworld through my ferry.\n");
                 room->greeted[2] = true; // Mark as greeted
-            } else {
+            }
                 printf("The Ferryman of the Dead waits silently by his boat.\n");
                 printf("[Ferryman of the Dead]: Are you ready to navigate the maze of the Underworld? [y/n]\n");
                 char choice;
@@ -359,7 +388,7 @@ void printRoomScenario(Room *room, Inventory *inventory) {
                     }
                 }
             }
-        } else { // void locations
+         else { // void locations
             printf("You are in an unknown room. It seems like it's a dead end. You turn back.\n");
             *room = previousRoom; // Return to the original position
         }
@@ -499,18 +528,147 @@ bool navigateMaze() {
 void bossFight(const char *bossName) {
     printf("You encounter %s!\n", bossName);
 
-    if (isWizard) {
-        printf("As a Wizard, you decide to use your spells to fight %s.\n", bossName);
-        printf("You cast a fireball!\n");
-        printf("%s is burned by the fireball and becomes weak.\n", bossName);
-        printf("You cast another spell to finish it off.\n");
-        printf("%s is defeated!\n", bossName);
-    } else {
-        printf("As a Warrior, you decide to use your strength to fight %s.\n", bossName);
-        printf("You swing your sword mightily!\n");
-        printf("%s is cut by your sword and becomes weak.\n", bossName);
-        printf("You deliver a final blow to finish it off.\n");
-        printf("%s is defeated!\n", bossName);
+    int damageTaken = isWizard ? 20 : 10; // Damage taken by character class
+    int firestormCount = 0, thunderboltCount = 0, slashCount = 0, pierceCount = 0;
+    int requiredFirestorm, requiredThunderbolt, requiredSlash, requiredPierce;
+
+    // Set the required number of attacks based on the boss and difficulty mode
+    if (strcmp(bossName, "The Great Thorns") == 0) {
+        requiredFirestorm = (difficultyMode == 0) ? 1 : 2;
+        requiredThunderbolt = (difficultyMode == 0) ? 5 : 9;
+        requiredSlash = (difficultyMode == 0) ? 2 : 3;
+        requiredPierce = (difficultyMode == 0) ? 2 : 3;
+    } else if (strcmp(bossName, "The Great Serpent") == 0) {
+        requiredFirestorm = (difficultyMode == 0) ? 3 : 6;
+        requiredThunderbolt = (difficultyMode == 0) ? 2 : 2;
+        requiredSlash = (difficultyMode == 0) ? 1 : 2;
+        requiredPierce = (difficultyMode == 0) ? 3 : 4;
+    }
+
+    bool bossDefeated = false;
+
+    while (!bossDefeated) {
+        printf("Choose your action:\n");
+        printf("[1] Attack\n");
+        printf("[2] Use Item\n");
+        int actionChoice;
+        scanf("%d", &actionChoice);
+
+        if (actionChoice == 2) {
+            printf("Select an item number to use: ");
+            int itemIndex;
+            scanf("%d", &itemIndex);
+            if (itemIndex > 0 && itemIndex <= playerInventory.itemCount) {
+                printf("You used %s.\n", playerInventory.items[itemIndex - 1]);
+                // Apply item effects (e.g., healing)
+                if (strcmp(playerInventory.items[itemIndex - 1], "Healing Herb") == 0) {
+                    hp += 20; // Example healing amount
+                    printf("You restored 20 HP. Current HP: %d\n", hp);
+                } else if (strcmp(playerInventory.items[itemIndex - 1], "Elixir") == 0) {
+                    hp += 40; // Example healing amount
+                    printf("You restored 50 HP. Current HP: %d\n", hp);
+                }
+
+                // Remove the item from the inventory
+                for (int i = itemIndex - 1; i < playerInventory.itemCount - 1; i++) {
+                    strcpy(playerInventory.items[i], playerInventory.items[i + 1]);
+                }
+                playerInventory.itemCount--;
+            } else {
+                printf("Invalid item number.\n");
+            }
+            continue;
+        }
+
+        if (isWizard) {
+            printf("As a Wizard, you decide to use your spells to fight %s.\n", bossName);
+            printf("Choose your spell:\n");
+            printf("[1] Firestorm\n");
+            printf("[2] Thunderbolt\n");
+            int spellChoice;
+            scanf("%d", &spellChoice);
+
+            switch (spellChoice) {
+                case 1:
+                    printf("You cast Firestorm!\n");
+                    firestormCount++;
+                    if (strcmp(bossName, "The Great Thorns") == 0) {
+                        printf("%s is burned by the Firestorm and is weak!\n", bossName);
+                    } else {
+                        printf("%s takes some damage from the Firestorm.\n", bossName);
+                    }
+                    break;
+                case 2:
+                    printf("You cast Thunderbolt!\n");
+                    thunderboltCount++;
+                    if (strcmp(bossName, "The Great Serpent") == 0) {
+                        printf("%s is shocked by the Thunderbolt and is weak!\n", bossName);
+                    } else {
+                        printf("%s takes some damage from the Thunderbolt.\n", bossName);
+                    }
+                    break;
+                default:
+                    printf("Invalid spell choice. The boss attacks you!\n");
+                    hp -= damageTaken;
+                    if (hp <= 0) {
+                        printf("You have been defeated by %s...\n", bossName);
+                        gameOver();
+                        return;
+                    }
+                    continue;
+            }
+        } else {
+            printf("As a Warrior, you decide to use your strength to fight %s.\n", bossName);
+            printf("Choose your attack:\n");
+            printf("[1] Slash\n");
+            printf("[2] Pierce\n");
+            int attackChoice;
+            scanf("%d", &attackChoice);
+
+            switch (attackChoice) {
+                case 1:
+                    printf("You swing your sword with a Slash attack!\n");
+                    slashCount++;
+                    if (strcmp(bossName, "The Great Serpent") == 0) {
+                        printf("%s is cut by your Slash and is weak!\n", bossName);
+                    } else {
+                        printf("%s takes some damage from the Slash.\n", bossName);
+                    }
+                    break;
+                case 2:
+                    printf("You thrust your sword with a Pierce attack!\n");
+                    pierceCount++;
+                    if (strcmp(bossName, "The Great Thorns") == 0) {
+                        printf("%s is pierced by your attack and is weak!\n", bossName);
+                    } else {
+                        printf("%s takes some damage from the Pierce.\n", bossName);
+                    }
+                    break;
+                default:
+                    printf("Invalid attack choice. The boss attacks you!\n");
+                    hp -= damageTaken;
+                    if (hp <= 0) {
+                        printf("You have been defeated by %s...\n", bossName);
+                        gameOver();
+                        return;
+                    }
+                    continue;
+            }
+        }
+
+        printf("%s attacks you back!\n", bossName);
+        hp -= damageTaken;
+        if (hp <= 0) {
+            printf("You have been defeated by %s...\n", bossName);
+            gameOver();
+            return;
+        }
+
+        // Check if the boss is defeated
+        if ((firestormCount >= requiredFirestorm && thunderboltCount >= requiredThunderbolt) ||
+            (slashCount >= requiredSlash && pierceCount >= requiredPierce)) {
+            bossDefeated = true;
+        }
     }
 
     printf("You have defeated %s and found the World Essence!\n", bossName);
@@ -518,6 +676,44 @@ void bossFight(const char *bossName) {
     printf("You are transported back to the foot of the tree.\n");
     currentRoom.x = 0;
     currentRoom.y = 1;
+}
+
+void updateMap(char map[30][51], int x, int y) {
+    // Convert x, y coordinates to map index and place 'X' in the map
+    // Adjust according to your game's coordinate system and map layout
+    int mapX = x + 15; // Example conversion, adjust as needed
+    int mapY = 15 - y; // Example conversion, adjust as needed
+
+    if (mapY >= 0 && mapY < 30 && mapX >= 0 && mapX < 50) {
+        if (map[mapY][mapX] == '|') {
+            map[mapY][mapX + 1] = 'X';
+            map[mapY][mapX + 2] = '|';
+        }
+    }
+}
+void useItem() {
+    printf("Select an item number to use: ");
+    int itemIndex;
+    scanf("%d", &itemIndex);
+    if (itemIndex > 0 && itemIndex <= playerInventory.itemCount) {
+        printf("You used %s.\n", playerInventory.items[itemIndex - 1]);
+        // Apply item effects (e.g., healing)
+        if (strcmp(playerInventory.items[itemIndex - 1], "Healing Herb") == 0) {
+            hp += 20; // Example healing amount
+            printf("You restored 20 HP. Current HP: %d\n", hp);
+        } else if (strcmp(playerInventory.items[itemIndex - 1], "Elixir") == 0) {
+            hp += 50; // Example healing amount
+            printf("You restored 50 HP. Current HP: %d\n", hp);
+        }
+
+        // Remove the item from the inventory
+        for (int i = itemIndex - 1; i < playerInventory.itemCount - 1; i++) {
+            strcpy(playerInventory.items[i], playerInventory.items[i + 1]);
+        }
+        playerInventory.itemCount--;
+    } else {
+        printf("Invalid item number.\n");
+    }
 }
 
 void displayMenu(){
@@ -620,6 +816,11 @@ void gameOver() {
     getchar();
     exit(0);
 }
+
+
+
+
+
 
 
 
