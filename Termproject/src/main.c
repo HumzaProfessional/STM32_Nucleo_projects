@@ -1,12 +1,11 @@
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
-// extern void initialise_monitor_handles(void);
+extern void initialise_monitor_handles(void);
 
 #define MAX_PUZZLES 4
-#define MAX_TREASURES 2
+#define MAX_TREASURES 1
 #define MAX_ITEMS 10
 #define ITEM_NAME_LENGTH 50
 #define GREET 4
@@ -48,7 +47,7 @@ void updateMap(char map[30][51], int x, int y);
 void useItem();
 
 int main(void) {
-    // initialise_monitor_handles();
+    initialise_monitor_handles();
     displayMenu();
 
     printf("Welcome to the Game:\n");
