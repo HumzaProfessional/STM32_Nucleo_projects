@@ -5,9 +5,8 @@
 /* ==============================================================================
  * @file: main.c
  * @brief: main program
- * @ author: Humza Rana & Mac
+ * @ author: Humza
  * @Lab 4: Led shifting blink with systick interrupt
- * @Class: CPE 3000
  * -----------------------------------------------------
  *  In this lab, pins are enabled to light leds.
  *  Two buttons are enabled to trigger a Systick interrupt.
